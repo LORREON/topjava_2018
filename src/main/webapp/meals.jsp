@@ -1,9 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://sargue.net/jsptags/time" prefix="javatime" %>
 <html>
 <head>
-    <title>Meal</title>
+    <title>Meals</title>
 </head>
 <body>
 <style type="text/css">
@@ -29,15 +30,19 @@
         <th>Data/Time</th>
         <th>Description</th>
         <th>Calories</th>
+        <th>Update</th>
+        <th>Delete</th>
     </tr>
 
-    <jsp:useBean id="mealsList" scope="request" type="java.util.List<ru.javawebinar.topjava.model.MealWithExceed>"/>
-    <c:forEach var="meal" items="${mealsList}">
+
+    <c:forEach items="${mealsList}" var="meal">
+        <jsp:useBean id="meal" scope="page" type="ru.javawebinar.topjava.model.MealWithExceed"/>
         <tr>
-            <td><javatime:format value="${meal.getDateTime()}" style="MS"/></td>
-            <td><c:out value="${meal.getDescription()}"/></td>
-            <td style="color: ${meal.isExceed() ? "red" : "green"}" >
-                <c:out value="${meal.getCalories()}"/></td>
+            <td><javatime:format value="${meal.dateTime}" style="MS"/></td>
+            <td>${meal.description}</td>
+            <td style="color: ${meal.exceed ? "red" : "green"}">${meal.calories}</td>
+            <td><a href="meals?action=update&id=${meal.id}">Update</a> </td>
+            <td><a href="meals?action=delete&id=${meal.id}">Delete</a></td>
         </tr>
     </c:forEach>
 </table>

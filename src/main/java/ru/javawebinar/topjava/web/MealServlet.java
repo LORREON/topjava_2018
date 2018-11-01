@@ -1,35 +1,57 @@
 package ru.javawebinar.topjava.web;
 
-import ru.javawebinar.topjava.model.MealWithExceed;
 
+import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.repository.FileMealRepository;
+import ru.javawebinar.topjava.repository.ImpFileMealRepository;
+import ru.javawebinar.topjava.util.MealsUtil;
+
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
+    private FileMealRepository repository;
 
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        repository = new ImpFileMealRepository();
+    }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<MealWithExceed> meals = new LinkedList<>();
-        meals.add(new MealWithExceed(LocalDateTime.of(LocalDate.of(2018,10,28), LocalTime.of(10,00)),"Сніданок",500, true));
-        meals.add(new MealWithExceed(LocalDateTime.of(LocalDate.of(2018,10,28), LocalTime.of(12,00)),"Обід",1000, true));
-        meals.add(new MealWithExceed(LocalDateTime.of(LocalDate.of(2018,10,28), LocalTime.of(20,00)),"Вечеря",501, true));
-        meals.add(new MealWithExceed(LocalDateTime.of(LocalDate.of(2018,10,29), LocalTime.of(10,00)),"Сніданок",500, false));
-        meals.add(new MealWithExceed(LocalDateTime.of(LocalDate.of(2018,10,29), LocalTime.of(12,00)),"Обід",1000, false));
-        meals.add(new MealWithExceed(LocalDateTime.of(LocalDate.of(2018,10,29), LocalTime.of(20,00)),"Вечеря",500, false));
-        meals.add(new MealWithExceed(LocalDateTime.of(LocalDate.of(2018,10,30), LocalTime.of(10,00)),"Сніданок",500, true));
-        meals.add(new MealWithExceed(LocalDateTime.of(LocalDate.of(2018,10,30), LocalTime.of(12,00)),"Обід",1000, true));
-        meals.add(new MealWithExceed(LocalDateTime.of(LocalDate.of(2018,10,30), LocalTime.of(20,00)),"Вечеря",600, true));
+        request.setCharacterEncoding("UTF-8");
+        String action = request.getParameter("action");
+        System.out.println(action);
 
-        request.setAttribute("mealsList", meals);
-        request.getRequestDispatcher("/meals.jsp").forward(request, response);
+        if (action == null) {
+            request.setAttribute("mealsList", MealsUtil.getWithExceeded(repository.getAll(), 2000));
+            request.getRequestDispatcher("/meals.jsp").forward(request, response);
+        } else if (action.equals("delete")) {
+            int id = getId(request);
+            repository.delete(id);
+            response.sendRedirect("meals");
+        } else {
+            final Meal meal = action.equals("create") ?
+                    new Meal(LocalDateTime.now(), "", 1000) :
+                    repository.get(getId(request));
+            request.setAttribute("meal", meal);
+            request.getRequestDispatcher("/mealEdit.jsp").forward(request, response);
+        }
+    }
+
+    private int getId(HttpServletRequest request) {
+        String param = Objects.requireNonNull(request.getParameter("id"));
+        return Integer.valueOf(param);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
     }
 }
