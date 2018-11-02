@@ -22,9 +22,10 @@
 </style>
 
 <h3><a href="index.html">Home</a></h3>
-<h2>Users</h2>
+<h2>Meals</h2>
+<a href="meals?action=create">Add meal</a>
+<hr>
 <br>
-
 <table class="mytable">
     <tr>
         <th>Data/Time</th>

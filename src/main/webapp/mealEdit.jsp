@@ -11,11 +11,11 @@
 <h2>MealEdit</h2>
 <hr>
 <jsp:useBean id="meal" scope="request" type="ru.javawebinar.topjava.model.Meal"/>
-<form action = "update" method = "POST">
+<form action = "meals" method = "POST">
 
     <table>
         <tr>
-            <td><input type = "hidden" name = "id" value=""></td>
+            <td><input type = "hidden" name = "id" value="${meal.id}"></td>
         </tr>
         <tr>
             <td>Date: </td>
@@ -33,10 +33,7 @@
             </table>
     <br>
     <input type="submit" value="Save">
-    <input type="button" value="Cansel" onclick="windows.history.back()">
-
-
-
+    <input type="button" value="Cansel" onclick="window.history.back()">
 
 </form>
 
